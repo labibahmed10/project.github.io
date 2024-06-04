@@ -3,15 +3,17 @@ import { SVGProps } from "react";
 import { Link } from "react-router-dom";
 import { JSX } from "react/jsx-runtime";
 
-export default function Component() {
+export default function NavbarComponent() {
   return (
-    <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6">
+    <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6 bg-slate-200">
       <Link to="/" className="mr-6 flex items-center">
         <MountainIcon className="h-6 w-6" />
         <span className="sr-only">Acme Inc</span>
       </Link>
       <div className="ml-auto">
-        <Button variant="outline">Sign In</Button>
+        <Link to="/sign-in" className="">
+          <Button variant="outline">Sign In</Button>
+        </Link>
       </div>
     </header>
   );
