@@ -12,12 +12,8 @@ app.use(urlencoded({ extended: true }));
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
-    message: "The app is running",
+    message: "Welcome to the project for final year",
   });
-});
-
-app.listen(8080, () => {
-  console.log("the app is running on port 8080");
 });
 
 export default app;
