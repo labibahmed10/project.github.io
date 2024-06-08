@@ -19,3 +19,5 @@ app.get("/", (req: Request, res: Response) => {
 app.listen(8080, () => {
   console.log("the app is running on port 8080");
 });
+
+export default app;
