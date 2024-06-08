@@ -54,6 +54,7 @@ userSchema.statics.isPasswordMatched = async function (candidatePassword: string
   return await bcrypt.compare(candidatePassword, hashPassword);
 };
 
+// find the password that matches the email address
 userSchema.statics.isUserExistByEmail = async function (email: string) {
   return await UserModel.findOne({ email }).select("+password");
 };

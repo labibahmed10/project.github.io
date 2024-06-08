@@ -1,6 +1,7 @@
 import express, { Application, urlencoded, Request, Response } from "express";
 import cors from "cors";
 import allRoutes from "./routes/allRoutes";
+import globalErrorHandler from "./middlewares/globalErrorHandler";
 
 const app: Application = express();
 
@@ -12,6 +13,9 @@ app.use(cors({ origin: "*", credentials: true }));
 app.use(urlencoded({ extended: true }));
 
 app.use("/api/v1", allRoutes);
+
+// global error handler
+app.use(globalErrorHandler);
 
 app.get("/", (req: Request, res: Response) => {
   res.status(200).json({
