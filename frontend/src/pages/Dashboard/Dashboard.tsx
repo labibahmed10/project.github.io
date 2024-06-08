@@ -1,202 +1,86 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ResponsiveBar } from "@nivo/bar";
-import { ResponsivePie } from "@nivo/pie";
 import { ResponsiveLine } from "@nivo/line";
 
-export default function DashBoard() {
-  const [temperatureData] = useState([
-    { timestamp: "2023-06-01", value: 22 },
-    { timestamp: "2023-06-02", value: 24 },
-    { timestamp: "2023-06-03", value: 23 },
-    { timestamp: "2023-06-04", value: 21 },
-    { timestamp: "2023-06-05", value: 25 },
-  ]);
-  const [humidityData] = useState([
-    { timestamp: "2023-06-01", value: 60 },
-    { timestamp: "2023-06-02", value: 65 },
-    { timestamp: "2023-06-03", value: 62 },
-    { timestamp: "2023-06-04", value: 58 },
-    { timestamp: "2023-06-05", value: 68 },
-  ]);
-  const [aqiData] = useState([
-    { timestamp: "2023-06-01", value: 45 },
-    { timestamp: "2023-06-02", value: 50 },
-    { timestamp: "2023-06-03", value: 48 },
-    { timestamp: "2023-06-04", value: 42 },
-    { timestamp: "2023-06-05", value: 52 },
-  ]);
-  const [liveAirQualityData] = useState([
-    { label: "PM2.5", value: 25 },
-    { label: "PM10", value: 35 },
-    { label: "NO2", value: 15 },
-    { label: "SO2", value: 10 },
-  ]);
+export default function Component() {
   return (
-    <div className="container mx-auto px-4 md:px-6 py-12 grid gap-8">
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="grid md:grid-cols-[300px_1fr] gap-6 w-full min-h-screen p-4">
+      <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg flex flex-col gap-6">
+        <div className="flex flex-col gap-2">
+          <div className="text-gray-500 dark:text-gray-400 font-medium">Live Temperature</div>
+          <div className="text-5xl font-bold">24°C</div>
+        </div>
+        <div className="flex flex-col gap-2">
+          <div className="text-gray-500 dark:text-gray-400 font-medium">Air Quality Index</div>
+          <div className="flex items-center gap-2">
+            <div className="bg-green-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">75</div>
+            <div className="text-gray-500 dark:text-gray-400">Good</div>
+          </div>
+        </div>
+      </div>
+      <div className="grid gap-6">
+        <div className="grid sm:grid-cols-2 grid-cols-1 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Temperature Trends</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LineChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Air Quality Trends</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LineChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+        </div>
         <Card>
           <CardHeader>
-            <CardTitle>Temperature</CardTitle>
+            <CardTitle>Detailed Analytics</CardTitle>
           </CardHeader>
           <CardContent>
-            <TimeseriesChart
-              className="aspect-[9/4]"
-              data={temperatureData.map((item) => ({
-                x: item.timestamp,
-                y: item.value,
-              }))}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Humidity</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <TimeseriesChart
-              className="aspect-[9/4]"
-              data={humidityData.map((item) => ({
-                x: item.timestamp,
-                y: item.value,
-              }))}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Air Quality Index</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <BarChart
-              className="aspect-[9/4]"
-              data={aqiData.map((item) => ({
-                x: item.timestamp,
-                y: item.value,
-              }))}
-            />
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="bg-blue-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                  <div className="text-gray-900 dark:text-gray-50 font-medium">Highest Temperature</div>
+                </div>
+                <div className="text-4xl font-bold">28°C</div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="bg-red-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                  <div className="text-gray-900 dark:text-gray-50 font-medium">Lowest AQI</div>
+                </div>
+                <div className="text-4xl font-bold">45</div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="bg-green-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                  <div className="text-gray-900 dark:text-gray-50 font-medium">Avg. Temperature</div>
+                </div>
+                <div className="text-4xl font-bold">22°C</div>
+              </div>
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="bg-yellow-500 w-8 h-8 rounded-full flex items-center justify-center text-white font-bold">4</div>
+                  <div className="text-gray-900 dark:text-gray-50 font-medium">Avg. AQI</div>
+                </div>
+                <div className="text-4xl font-bold">65</div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>Live Air Quality</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <PieChart
-            className="aspect-square"
-            data={liveAirQualityData.map((item) => ({
-              label: item.label,
-              value: item.value,
-            }))}
-          />
-        </CardContent>
-      </Card>
     </div>
   );
 }
 
-function BarChart(props: any) {
-  return (
-    <div {...props}>
-      <ResponsiveBar
-        data={[
-          { name: "Jan", count: 111 },
-          { name: "Feb", count: 157 },
-          { name: "Mar", count: 129 },
-          { name: "Apr", count: 150 },
-          { name: "May", count: 119 },
-          { name: "Jun", count: 72 },
-        ]}
-        keys={["count"]}
-        indexBy="name"
-        margin={{ top: 0, right: 0, bottom: 40, left: 40 }}
-        padding={0.3}
-        colors={["#2563eb"]}
-        axisBottom={{
-          tickSize: 0,
-          tickPadding: 16,
-        }}
-        axisLeft={{
-          tickSize: 0,
-          tickValues: 4,
-          tickPadding: 16,
-        }}
-        gridYValues={4}
-        theme={{
-          tooltip: {
-            chip: {
-              borderRadius: "9999px",
-            },
-            container: {
-              fontSize: "12px",
-              textTransform: "capitalize",
-              borderRadius: "6px",
-            },
-          },
-          grid: {
-            line: {
-              stroke: "#f3f4f6",
-            },
-          },
-        }}
-        tooltipLabel={({ id }: any) => `${id}`}
-        enableLabel={false}
-        role="application"
-        ariaLabel="A bar chart showing data"
-      />
-    </div>
-  );
-}
-
-function PieChart(props: any) {
-  return (
-    <div {...props}>
-      <ResponsivePie
-        data={[
-          { id: "Jan", value: 111 },
-          { id: "Feb", value: 157 },
-          { id: "Mar", value: 129 },
-          { id: "Apr", value: 150 },
-          { id: "May", value: 119 },
-          { id: "Jun", value: 72 },
-        ]}
-        sortByValue
-        margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
-        cornerRadius={0}
-        padAngle={0}
-        borderWidth={1}
-        borderColor={"#ffffff"}
-        enableArcLinkLabels={false}
-        arcLabel={(d: { id: any }) => `${d.id}`}
-        arcLabelsTextColor={"#ffffff"}
-        arcLabelsRadiusOffset={0.65}
-        colors={["#2563eb"]}
-        theme={{
-          labels: {
-            text: {
-              fontSize: "18px",
-            },
-          },
-          tooltip: {
-            chip: {
-              borderRadius: "9999px",
-            },
-            container: {
-              fontSize: "12px",
-              textTransform: "capitalize",
-              borderRadius: "6px",
-            },
-          },
-        }}
-        role="application"
-      />
-    </div>
-  );
-}
-
-function TimeseriesChart(props: any) {
+function LineChart(props: any) {
   return (
     <div {...props}>
       <ResponsiveLine
@@ -204,48 +88,38 @@ function TimeseriesChart(props: any) {
           {
             id: "Desktop",
             data: [
-              { x: "2018-01-01", y: 7 },
-              { x: "2018-01-02", y: 5 },
-              { x: "2018-01-03", y: 11 },
-              { x: "2018-01-04", y: 9 },
-              { x: "2018-01-05", y: 12 },
-              { x: "2018-01-06", y: 16 },
-              { x: "2018-01-07", y: 13 },
+              { x: "Jan", y: 43 },
+              { x: "Feb", y: 137 },
+              { x: "Mar", y: 61 },
+              { x: "Apr", y: 145 },
+              { x: "May", y: 26 },
+              { x: "Jun", y: 154 },
             ],
           },
           {
             id: "Mobile",
             data: [
-              { x: "2018-01-01", y: 9 },
-              { x: "2018-01-02", y: 8 },
-              { x: "2018-01-03", y: 13 },
-              { x: "2018-01-04", y: 6 },
-              { x: "2018-01-05", y: 8 },
-              { x: "2018-01-06", y: 14 },
-              { x: "2018-01-07", y: 11 },
+              { x: "Jan", y: 60 },
+              { x: "Feb", y: 48 },
+              { x: "Mar", y: 177 },
+              { x: "Apr", y: 78 },
+              { x: "May", y: 96 },
+              { x: "Jun", y: 204 },
             ],
           },
         ]}
-        margin={{ top: 10, right: 20, bottom: 40, left: 40 }}
+        margin={{ top: 10, right: 10, bottom: 40, left: 40 }}
         xScale={{
-          type: "time",
-          format: "%Y-%m-%d",
-          useUTC: false,
-          precision: "day",
+          type: "point",
         }}
-        xFormat="time:%Y-%m-%d"
         yScale={{
           type: "linear",
-          min: 0,
-          max: "auto",
         }}
         axisTop={null}
         axisRight={null}
         axisBottom={{
           tickSize: 0,
           tickPadding: 16,
-          format: "%d",
-          tickValues: "every 1 day",
         }}
         axisLeft={{
           tickSize: 0,
