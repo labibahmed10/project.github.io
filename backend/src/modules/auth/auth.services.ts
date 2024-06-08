@@ -1,4 +1,6 @@
+import httpStatus from "http-status";
 import config from "../../config/config";
+import { AppError } from "../../errors/AppError";
 import createToken from "../../utils/createToken";
 import UserModel from "../user/user.model";
 import { ILoginUser } from "./auth.interface";
@@ -8,12 +10,12 @@ const loginUserFromDB = async (userData: ILoginUser) => {
 
   const user = await UserModel.isUserExistByEmail(email);
   if (!user) {
-    throw new Error("User not found");
+    throw new AppError(httpStatus.NOT_FOUND, "User not found");
   }
 
   const didPassMatched = await UserModel.isPasswordMatched(password, user.password);
   if (!didPassMatched) {
-    throw new Error("The password did not matched");
+    throw new AppError(httpStatus.CONFLICT, "The password did not matched");
   }
 
   const jwtPayload = {
