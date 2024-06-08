@@ -12,7 +12,7 @@ const SignInPage = () => {
   const navigate = useNavigate();
   const { mutate, isError, isSuccess } = useLoginMutation();
 
-  const useSubmit = async (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
     const email = e.target.name.value;
@@ -30,7 +30,7 @@ const SignInPage = () => {
     if (isError) {
       toast.error("There was an error while login");
     }
-  }, [isSuccess, isError]);
+  }, [isSuccess, isError, navigate]);
 
   return (
     <div className="p-4">
@@ -39,7 +39,7 @@ const SignInPage = () => {
           <CardTitle>Sign In to Your Account</CardTitle>
           <CardDescription>Make changes to your account here</CardDescription>
         </CardHeader>
-        <form action="" onSubmit={useSubmit}>
+        <form action="" onSubmit={handleSubmit}>
           <CardContent className="space-y-2">
             <div className="space-y-1">
               <Label htmlFor="name">Email</Label>

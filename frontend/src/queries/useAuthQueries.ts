@@ -52,16 +52,15 @@ const useSignupMutation = () => {
   const { logIn } = useAuthStore();
 
   return useMutation({
-    mutationFn: async (userData) => {
-      return await fetch("/login", {
-        method: "POST",
-        headers: {
-          credentials: "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
+    mutationFn: async (userData: { name: string; email: string; password: string }) => {
+      return await instance.post("/signup", userData);
     },
-    onSuccess: (data) => logIn(data as any), // Update store with token
+    onSuccess: (data) => {
+      const {
+        data: { data: userData },
+      } = data;
+      return logIn(userData);
+    }, // Update store with token
     onError: (error) => console.error("Login error:", error), // Handle errors
   });
 };

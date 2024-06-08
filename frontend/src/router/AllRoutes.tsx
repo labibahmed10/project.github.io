@@ -1,4 +1,5 @@
 import App from "@/App";
+import { ProtectedRoute } from "@/components/Protected/ProtectedRoute";
 import DashBoard from "@/pages/Dashboard/Dashboard";
 import SignInPage from "@/pages/sign-in/SignInPage";
 import SignUpPage from "@/pages/sign-up/SignUpPage";
@@ -19,7 +20,11 @@ const router = createBrowserRouter([
       },
       {
         path: "",
-        element: <DashBoard />,
+        element: (
+          <ProtectedRoute>
+            <DashBoard />
+          </ProtectedRoute>
+        ),
       },
     ],
   },
