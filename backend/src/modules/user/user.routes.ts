@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { usersController } from "./user.controller";
 import validateRequest from "../../middlewares/validateRequest";
-import userDataValidation from "./user.zod.validation";
+import { userValidation } from "./user.zod.validation";
 const userRoutes = Router();
 
-userRoutes.post("/sign-up", validateRequest(userDataValidation), usersController.createUser);
+userRoutes.post("/signup", validateRequest(userValidation.userSignUpValidation), usersController.createUser);
 
 export default userRoutes;

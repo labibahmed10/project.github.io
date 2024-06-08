@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const userDataValidation = z.object({
+const userSignUpValidation = z.object({
   body: z.object({
     name: z
       .string({
@@ -16,7 +16,6 @@ const userDataValidation = z.object({
         invalid_type_error: "Email must be a string",
       })
       .email("Email is not valid")
-      .toLowerCase()
       .trim(),
     password: z
       .string({
@@ -28,4 +27,6 @@ const userDataValidation = z.object({
   }),
 });
 
-export default userDataValidation;
+export const userValidation = {
+  userSignUpValidation,
+};
