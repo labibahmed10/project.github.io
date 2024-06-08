@@ -1,19 +1,27 @@
 import { Button } from "@/components/ui/button";
+import userStore from "@/store/authStore";
 import { SVGProps } from "react";
 import { Link } from "react-router-dom";
 import { JSX } from "react/jsx-runtime";
 
 export default function NavbarComponent() {
+  const { email, logOut } = userStore();
   return (
     <header className="flex h-20 w-full shrink-0 items-center px-4 md:px-6 bg-slate-200">
       <Link to="/" className="mr-6 flex items-center">
         <MountainIcon className="h-6 w-6" />
-        <span className="sr-only">Acme Inc</span>
+        <span className="sr-only">Final Project</span>
       </Link>
       <div className="ml-auto">
-        <Link to="/sign-in" className="">
-          <Button variant="outline">Sign In</Button>
-        </Link>
+        {email ? (
+          <Button onClick={logOut} className="bg-red-600">
+            Log out
+          </Button>
+        ) : (
+          <Link to="/sign-in" className="">
+            <Button variant="outline">Sign In</Button>
+          </Link>
+        )}
       </div>
     </header>
   );
