@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ResponsiveLine } from "@nivo/line";
 
-export default function Component() {
+export default function Dashboard() {
   return (
     <div className="grid md:grid-cols-[300px_1fr] gap-6 w-full min-h-screen p-4">
       <div className="bg-gray-100 dark:bg-gray-800 p-6 rounded-lg flex flex-col gap-6">
@@ -20,24 +19,6 @@ export default function Component() {
         </div>
       </div>
       <div className="grid gap-6">
-        <div className="grid sm:grid-cols-2 grid-cols-1 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Temperature Trends</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LineChart className="aspect-[4/3]" />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Air Quality Trends</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <LineChart className="aspect-[4/3]" />
-            </CardContent>
-          </Card>
-        </div>
         <Card>
           <CardHeader>
             <CardTitle>Detailed Analytics</CardTitle>
@@ -75,6 +56,24 @@ export default function Component() {
             </div>
           </CardContent>
         </Card>
+        <div className="grid sm:grid-cols-2 grid-cols-1 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Temperature Trends</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LineChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle>Air Quality Trends</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <LineChart className="aspect-[4/3]" />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
