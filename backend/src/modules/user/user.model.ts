@@ -44,20 +44,20 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-// Compare password with hashed password
-userSchema.statics.isPasswordMatched = async function (candidatePassword: string, hashPassword: string) {
-  try {
-    return await bcrypt.compare(candidatePassword, hashPassword);
-  } catch (error) {
-    throw new Error("Password did not match");
-  }
-};
-
 userSchema.post("save", async function (_, next) {
   this.password = "";
   next();
 });
 
-const UserModel = model("users", userSchema, "user_data");
+// Compare password with hashed password
+userSchema.statics.isPasswordMatched = async function (candidatePassword: string, hashPassword: string) {
+  return await bcrypt.compare(candidatePassword, hashPassword);
+};
+
+userSchema.statics.isUserExistByEmail = async function (email: string) {
+  return await UserModel.findOne({ email }).select("+password");
+};
+
+const UserModel = model<IUserData, UserStaticMethods>("users", userSchema, "user_data");
 
 export default UserModel;

@@ -10,4 +10,5 @@ export interface IUserData {
 
 export interface UserStaticMethods extends Model<IUserData> {
   isPasswordMatched(userPass: string, hashedPass: string): Promise<boolean>;
+  isUserExistByEmail(email: string): Promise<IUserData>;
 }
