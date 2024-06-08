@@ -1,12 +1,17 @@
 import { Router } from "express";
 import { IRouteType } from "../interfaces/route/routesType";
 import authRoutes from "../modules/auth/auth.routes";
+import userRoutes from "../modules/user/user.routes";
 const allRoutes = Router();
 
 const routes: IRouteType[] = [
   {
-    path: "/auth",
+    path: "/",
     route: authRoutes,
+  },
+  {
+    path: "/",
+    route: userRoutes,
   },
 ];
 
