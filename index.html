@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sensor Data Dashboard</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-app-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/9.23.0/firebase-database-compat.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background-color: #f5f5f5;
+      }
+      .dashboard {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 20px;
+      }
+      .card {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        flex: 1;
+        min-width: 200px;
+      }
+      .card h2 {
+        margin-top: 0;
+        color: #333;
+      }
+      .value {
+        font-size: 24px;
+        font-weight: bold;
+        color: #0066cc;
+      }
+      .chart-container {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Sensor Data Dashboard</h1>
+    <div class="dashboard">
+      <div class="card">
+        <h2>Temperature</h2>
+        <div class="value" id="temperature">--</div>
+        <div>°C</div>
+      </div>
+      <div class="card">
+        <h2>Humidity</h2>
+        <div class="value" id="humidity">--</div>
+        <div>%</div>
+      </div>
+      <div class="card">
+        <h2>Air Quality</h2>
+        <div class="value" id="airQuality">--</div>
+        <div id="airQualityCategory"></div>
+      </div>
+    </div>
+    <div class="chart-container">
+      <canvas id="sensorChart"></canvas>
+    </div>
+
+    <script>
+      // Firebase configuration
+      const firebaseConfig = {
+        databaseURL: "https://airtemphum-default-rtdb.asia-southeast1.firebasedatabase.app",
+      };
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const database = firebase.database();
+
+      // Chart initialization
+      // Chart initialization
+      const ctx = document.getElementById("sensorChart").getContext("2d");
+      const chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "Temperature (°C)",
+              data: [],
+              borderColor: "rgb(255, 99, 132)",
+              tension: 0.1,
+            },
+            {
+              label: "Humidity (%)",
+              data: [],
+              borderColor: "rgb(54, 162, 235)",
+              tension: 0.1,
+            },
+            {
+              label: "Air Quality",
+              data: [],
+              borderColor: "rgb(75, 192, 192)",
+              tension: 0.1,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: "Time",
+              },
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: "Value",
+              },
+            },
+          },
+        },
+      });
+
+      // Update chart with new data
+      function updateChart(data) {
+        const timestamp = new Date().toLocaleTimeString();
+        chart.data.labels.push(timestamp);
+
+        // Update datasets with the latest data
+        chart.data.datasets[0].data.push(data[data.length - 1].temperature);
+        chart.data.datasets[1].data.push(data[data.length - 1].humidity);
+        chart.data.datasets[2].data.push(data[data.length - 1].airQualityIndex);
+
+        // Keep only the last 10 data points
+        // if (chart.data.labels.length > 50) {
+        //   chart.data.labels.shift();
+        //   chart.data.datasets.forEach((dataset) => dataset.data.shift());
+        // }
+
+        chart.update();
+      }
+
+      // Listen for new data
+      database.ref("sensor_data").on("value", (snapshot) => {
+        const data = snapshot.val();
+
+        if (data) {
+          const latestData = Object.values(data);
+          document.getElementById("temperature").innerText = latestData[latestData.length - 1].temperature;
+          document.getElementById("humidity").innerText = latestData[latestData.length - 1].humidity;
+          document.getElementById("airQuality").innerText = latestData[latestData.length - 1].airQualityIndex;
+          document.getElementById("airQualityCategory").innerText = latestData[latestData.length - 1].airQualityCategory;
+          updateChart(latestData);
+        }
+      });
+    </script>
+  </body>
+</html>

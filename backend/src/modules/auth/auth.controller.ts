@@ -7,7 +7,10 @@ const loginUser = catchAsyncFunc(async (req, res) => {
   const userData = req.body;
   const result = await authServices.loginUserFromDB(userData);
 
-  sendResponse(res, httpStatus.OK, "User login Successfull", result);
+  sendResponse(res, httpStatus.OK, "User login Successfull", {
+    email: req.body.email,
+    token: result,
+  });
 });
 
 export const authControllers = {
