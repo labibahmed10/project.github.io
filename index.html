@@ -41,6 +41,9 @@
         border-radius: 8px;
         padding: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 82vw;
+        height: 60vh; /* Adjust this value to change the chart's height */
+        margin-bottom: 20px;
       }
     </style>
   </head>
@@ -107,6 +110,20 @@
         },
         options: {
           responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: "index",
+            intersect: false,
+          },
+          plugins: {
+            legend: {
+              position: "top",
+            },
+            title: {
+              display: true,
+              text: "Sensor Data Over Time",
+            },
+          },
           scales: {
             x: {
               display: true,
@@ -120,6 +137,11 @@
               title: {
                 display: true,
                 text: "Value",
+              },
+              ticks: {
+                callback: function (value, index, values) {
+                  return value.toFixed(1);
+                },
               },
             },
           },
