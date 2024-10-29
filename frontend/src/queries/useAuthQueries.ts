@@ -9,26 +9,15 @@ const instance = axios.create({
     "Content-type": "application/json",
   },
 });
+
 instance.interceptors.request.use(
-  (request) => {
-    // Run code before each request
-    return request;
-  },
-  (error) => {
-    // Handle request errors
-    return Promise.reject(error);
-  }
+  (request) => request,
+  (error) => Promise.reject(error)
 );
 
 instance.interceptors.response.use(
-  (response) => {
-    // Run code after each response
-    return response;
-  },
-  (error) => {
-    // Handle response errors
-    return Promise.reject(error);
-  }
+  (response) => response,
+  (error) => Promise.reject(error)
 );
 
 const useLoginMutation = () => {

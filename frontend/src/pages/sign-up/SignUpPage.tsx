@@ -14,7 +14,6 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-
     const name = e.target.name.value;
     const email = e.target.email.value;
     const password = e.target.password.value;
@@ -46,12 +45,12 @@ const SignUpPage = () => {
               <Input id="name" placeholder="Enter your name" name="name" type="text" />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="name">Email</Label>
-              <Input id="name" placeholder="Enter your email" name="email" type="text" />
+              <Label htmlFor="email">Email</Label>
+              <Input id="email" placeholder="Enter your email" name="email" type="text" />
             </div>
             <div className="space-y-1">
-              <Label htmlFor="username">Password</Label>
-              <Input id="username" placeholder="Enter your password" name="password" type="password" />
+              <Label htmlFor="password">Password</Label>
+              <Input id="password" placeholder="Enter your password" name="password" type="password" />
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">
