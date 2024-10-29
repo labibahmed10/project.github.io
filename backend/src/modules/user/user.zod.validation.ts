@@ -7,7 +7,6 @@ const userSignUpValidation = z.object({
         required_error: "Name is required",
         invalid_type_error: "Name must be a string",
       })
-      .min(3, "Name must be at least 3 characters long")
       .max(50, "Name cannot exceed 50 characters")
       .trim(),
     email: z
