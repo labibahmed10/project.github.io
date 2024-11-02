@@ -25,7 +25,7 @@
         padding: 20px;
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         flex: 1;
-        min-width: 200px;
+        min-width: 220px;
       }
       .card h2 {
         margin-top: 0;
@@ -45,10 +45,86 @@
         height: 60vh; /* Adjust this value to change the chart's height */
         margin-bottom: 20px;
       }
+      .data-table {
+        background-color: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin-top: 20px;
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #f5f5f5;
+      }
+
+      .comparison-section {
+        margin: 20px;
+        padding: 20px;
+        background: #f5f5f5;
+        border-radius: 8px;
+      }
+
+      .comparison-table,
+      .split-tables {
+        margin-top: 20px;
+      }
+
+      .split-tables {
+        display: flex;
+        gap: 20px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        background: white;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #4caf50;
+        color: white;
+      }
+
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+
+      h2,
+      h3 {
+        color: #333;
+        margin-bottom: 15px;
+      }
+
+      .sensor-data,
+      .weather-api-data {
+        flex: 1;
+      }
     </style>
   </head>
   <body>
     <h1>Sensor Data Dashboard</h1>
+    <!-- main dashboard div -->
     <div class="dashboard">
       <div class="card">
         <h2>Temperature</h2>
@@ -66,8 +142,81 @@
         <div id="airQualityCategory"></div>
       </div>
     </div>
+
+    <!-- Chart container live firebase data-->
     <div class="chart-container">
       <canvas id="sensorChart"></canvas>
+    </div>
+
+    <!-- Add this after the existing dashboard div -->
+    <div class="dashboard">
+      <div class="card">
+        <h2>Weather API Data</h2>
+        <div class="weather-data">
+          <div><strong>Temperature:</strong> <span id="weatherTemp">--</span>°C</div>
+          <div><strong>Feels Like:</strong> <span id="feelsLike">--</span>°C</div>
+          <div><strong>Humidity:</strong> <span id="weatherHumidity">--</span>%</div>
+          <div><strong>Description:</strong> <span id="weatherDesc">--</span></div>
+          <div><strong>Location:</strong> <span id="location">--</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Here is two tables for comparison -->
+    <div class="comparison-section">
+      <h2>Data Comparison</h2>
+
+      <!-- Single Table Version -->
+      <div class="comparison-table">
+        <h3>Combined Comparison</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Sensor Temp (°C)</th>
+              <th>Weather API Temp (°C)</th>
+              <th>Feels Like (°C)</th>
+              <th>Sensor Humidity (%)</th>
+              <th>Weather API Humidity (%)</th>
+              <th>Sensor AQI</th>
+            </tr>
+          </thead>
+          <tbody id="combinedComparisonBody"></tbody>
+        </table>
+      </div>
+
+      <!-- Split Tables Version -->
+      <div class="split-tables">
+        <div class="sensor-data">
+          <h3>Sensor Data</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Temperature (°C)</th>
+                <th>Humidity (%)</th>
+                <th>AQI</th>
+              </tr>
+            </thead>
+            <tbody id="sensorTableBody"></tbody>
+          </table>
+        </div>
+
+        <div class="weather-api-data">
+          <h3>Weather API Data</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Temperature (°C)</th>
+                <th>Feels like (°C)</th>
+                <th>Humidity (%)</th>
+              </tr>
+            </thead>
+            <tbody id="weatherApiTableBody"></tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <script>
@@ -76,11 +225,35 @@
         databaseURL: "https://airtemphum-default-rtdb.asia-southeast1.firebasedatabase.app",
       };
 
+      // Add these constants at the top of your script
+      const WEATHER_API_KEY = "d1248c3b25244294963141611240211";
+      const CITY = "Dhaka";
+      const UPDATE_INTERVAL = 300000; // 5 minutes in milliseconds
+      const CUTOFF_DATE = "2024-11-02 15:00:00";
+
+      const WEATHER_API_URL = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${CITY}`;
+      // Function to fetch weather API data
+      async function fetchWeatherData() {
+        try {
+          const response = await fetch(WEATHER_API_URL);
+          const data = await response.json();
+          // console.log(data);
+          document.getElementById("weatherTemp").innerText = data.current.temp_c.toFixed(2);
+          document.getElementById("feelsLike").innerText = data.current.feelslike_c.toFixed(2);
+          document.getElementById("weatherHumidity").innerText = data.current.humidity;
+          document.getElementById("location").innerText = data.location.name;
+          document.getElementById("weatherDesc").innerText = data.current.condition.text;
+          return data;
+        } catch (error) {
+          console.error("Error fetching weather data:", error);
+          return null;
+        }
+      }
+
       // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
+      https: firebase.initializeApp(firebaseConfig);
       const database = firebase.database();
 
-      // Chart initialization
       // Chart initialization
       const ctx = document.getElementById("sensorChart").getContext("2d");
       const chart = new Chart(ctx, {
@@ -158,27 +331,179 @@
         chart.data.datasets[1].data.push(data[data.length - 1].humidity);
         chart.data.datasets[2].data.push(data[data.length - 1].airQualityIndex);
 
-        // Keep only the last 10 data points
-        // if (chart.data.labels.length > 50) {
-        //   chart.data.labels.shift();
-        //   chart.data.datasets.forEach((dataset) => dataset.data.shift());
-        // }
-
         chart.update();
       }
 
-      // Listen for new data
+      // Modify the existing Firebase listener
       database.ref("sensor_data").on("value", (snapshot) => {
         const data = snapshot.val();
-
         if (data) {
           const latestData = Object.values(data);
+          // Update current values
           document.getElementById("temperature").innerText = latestData[latestData.length - 1].temperature;
           document.getElementById("humidity").innerText = latestData[latestData.length - 1].humidity;
           document.getElementById("airQuality").innerText = latestData[latestData.length - 1].airQualityIndex;
           document.getElementById("airQualityCategory").innerText = latestData[latestData.length - 1].airQualityCategory;
+
           updateChart(latestData);
         }
+      });
+
+      // Function to format date consistently
+      function formatDateTime(dateString) {
+        const date = Number(dateString) > 0 ? new Date(dateString * 1000) : new Date(dateString);
+
+        const newData = date.toISOString();
+
+        let formattedTime = newData.slice(11, 19);
+        let formattedDate = newData.slice(0, 10);
+
+        // Extract hours after correction
+        let ampm = formattedTime.split(":")[0] >= 12 ? "PM" : "AM";
+
+        let hours = formattedTime.split(":")[0] % 12;
+        hours = hours ? hours : 12;
+
+        let minutes = formattedTime.split(":")[1];
+        let seconds = formattedTime.split(":")[2];
+
+        formattedTime = `${hours}:${minutes}:${seconds} ${ampm}`;
+
+        return `${formattedDate} ${formattedTime}`;
+      }
+
+      // Function to check if date is after cutoff
+      function isAfterCutoff(dateString) {
+        const date = new Date(dateString * 1000);
+        const cutoff = new Date(CUTOFF_DATE);
+        return date.toLocaleString() > cutoff.toLocaleString();
+      }
+
+      // Update the comparison tables function
+      async function updateComparisonTables(sensorData, weatherData) {
+        const combinedBody = document.getElementById("combinedComparisonBody");
+        const sensorBody = document.getElementById("sensorTableBody");
+        const weatherBody = document.getElementById("weatherApiTableBody");
+
+        // Clear existing data
+        combinedBody.innerHTML = "";
+        sensorBody.innerHTML = "";
+        weatherBody.innerHTML = "";
+
+        const filteredSensorData = Object.values(sensorData)
+          .filter((reading) => isAfterCutoff(reading.timestamp))
+          .sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        // Get hourly forecast data
+        const hourlyForecast = weatherData.forecast.forecastday[0].hour;
+        const newDateToShowHistory = new Date(CUTOFF_DATE).toLocaleDateString();
+        let currentDate = new Date(weatherData.forecast.forecastday[0].date);
+        currentDate.setDate(currentDate.getDate() - 1);
+
+        // // Format it to a locale date string
+        let previousDay = currentDate.toLocaleDateString();
+        // console.log(previousDay);
+
+        async function fetchPrevDayHistoryData() {
+          try {
+            const response = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${CITY}&dt=${previousDay}&aqi=yes`);
+            const data = await response.json();
+            return data;
+          } catch (e) {
+            console.log(e);
+          }
+        }
+        const historicalData = await fetchPrevDayHistoryData();
+        console.log(historicalData?.forecast.forecastday[0].hour);
+
+        filteredSensorData.forEach((reading) => {
+          const readingTime = new Date(reading.timestamp * 1000);
+
+          const matchingWeather =
+            hourlyForecast.find((forecast) => {
+              return (
+                new Date(forecast?.time).toDateString() === readingTime.toDateString() &&
+                new Date(forecast?.time).getHours() + 6 === readingTime.getHours()
+              );
+            }) ||
+            historicalData?.forecast.forecastday[0].hour.find((hour) => {
+              return (
+                new Date(hour.time).toDateString() === readingTime.toDateString() && new Date(hour.time).getHours() + 6 === readingTime.getHours()
+              );
+            });
+
+          if (matchingWeather) {
+            const row = `
+                    <tr>
+                      <td>${formatDateTime(reading.timestamp)}</td>
+                      <td>${reading.temperature.toFixed(1)}</td>
+                      <td>${matchingWeather.temp_c.toFixed(1)}</td>
+                      <td>${matchingWeather.feelslike_c.toFixed(1)}</td>
+                      <td>${reading.humidity.toFixed(1)}</td>
+                      <td>${matchingWeather.humidity}</td>
+                      <td>${reading.airQualityIndex}</td>
+                    </tr>
+                  `;
+            combinedBody.innerHTML += row;
+          }
+        });
+
+        // Update sensor data table
+        filteredSensorData.forEach((reading) => {
+          const row = `
+                  <tr>
+                    <td>${formatDateTime(reading.timestamp)}</td>
+                    <td>${reading.temperature.toFixed(1)}</td>
+                    <td>${reading.humidity.toFixed(1)}</td>
+                    <td>${reading.airQualityIndex}</td>
+                  </tr>
+                `;
+          sensorBody.innerHTML += row;
+        });
+
+        // Update weather API table
+        hourlyForecast.forEach((forecast) => {
+          const row = `
+                  <tr>
+                    <td>${formatDateTime(forecast.time)}</td>
+                    <td>${forecast.temp_c.toFixed(1)}</td>
+                    <td>${forecast.feelslike_c.toFixed(1)}</td>
+                    <td>${forecast.humidity}</td>
+                  </tr>
+                `;
+          weatherBody.innerHTML += row;
+        });
+      }
+
+      // Update the Firebase listener
+      function initializeFirebaseListener() {
+        const dbRef = database.ref("sensor_data").on("value", async (snapshot) => {
+          const sensorData = snapshot.val();
+          if (sensorData) {
+            const weatherData = await fetchWeatherData();
+            if (weatherData) {
+              updateComparisonTables(sensorData, weatherData);
+            }
+          }
+        });
+      }
+
+      // Initialize everything when document is ready
+      document.addEventListener("DOMContentLoaded", async () => {
+        initializeFirebaseListener();
+
+        // Set up interval for weather API updates
+        setInterval(async () => {
+          const weatherData = await fetchWeatherData();
+          if (weatherData) {
+            const dbRef = database.ref("sensor_data").on("value", async (snapshot) => {
+              const sensorData = snapshot.val();
+              if (sensorData) {
+                updateComparisonTables(sensorData, weatherData);
+              }
+            });
+          }
+        }, UPDATE_INTERVAL);
       });
     </script>
   </body>
