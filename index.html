@@ -178,6 +178,7 @@
               <th>Feels Like (°C)</th>
               <th>Sensor Humidity (%)</th>
               <th>Weather API Humidity (%)</th>
+              <th>Temp Difference (%)</th>
               <th>Sensor AQI</th>
             </tr>
           </thead>
@@ -202,7 +203,7 @@
           </table>
         </div>
 
-        <div class="weather-api-data">
+        <!-- <div class="weather-api-data">
           <h3>Weather API Data</h3>
           <table>
             <thead>
@@ -215,7 +216,7 @@
             </thead>
             <tbody id="weatherApiTableBody"></tbody>
           </table>
-        </div>
+        </div> -->
       </div>
     </div>
 
@@ -383,12 +384,12 @@
       async function updateComparisonTables(sensorData, weatherData) {
         const combinedBody = document.getElementById("combinedComparisonBody");
         const sensorBody = document.getElementById("sensorTableBody");
-        const weatherBody = document.getElementById("weatherApiTableBody");
+        // const weatherBody = document.getElementById("weatherApiTableBody");
 
         // Clear existing data
         combinedBody.innerHTML = "";
         sensorBody.innerHTML = "";
-        weatherBody.innerHTML = "";
+        // weatherBody.innerHTML = "";
 
         const filteredSensorData = Object.values(sensorData)
           .filter((reading) => isAfterCutoff(reading.timestamp))
@@ -398,7 +399,7 @@
         const hourlyForecast = weatherData.forecast.forecastday[0].hour;
         const newDateToShowHistory = new Date(CUTOFF_DATE).toLocaleDateString();
         let currentDate = new Date(weatherData.forecast.forecastday[0].date);
-        currentDate.setDate(currentDate.getDate() - 1);
+        currentDate.setDate(currentDate.getDate() - 2);
 
         // // Format it to a locale date string
         let previousDay = currentDate.toLocaleDateString();
@@ -433,6 +434,11 @@
             });
 
           if (matchingWeather) {
+            // Calculate temperature difference percentage
+            const tempDiff = Math.abs(reading.temperature - matchingWeather.temp_c);
+            const avgTemp = (reading.temperature + matchingWeather.temp_c) / 2;
+            const fluctuationPercentage = ((tempDiff / avgTemp) * 100).toFixed(1);
+
             const row = `
                     <tr>
                       <td>${formatDateTime(reading.timestamp)}</td>
@@ -441,6 +447,7 @@
                       <td>${matchingWeather.feelslike_c.toFixed(1)}</td>
                       <td>${reading.humidity.toFixed(1)}</td>
                       <td>${matchingWeather.humidity}</td>
+                      <td>${fluctuationPercentage}%</td>
                       <td>${reading.airQualityIndex}</td>
                     </tr>
                   `;
@@ -462,17 +469,17 @@
         });
 
         // Update weather API table
-        hourlyForecast.forEach((forecast) => {
-          const row = `
-                  <tr>
-                    <td>${formatDateTime(forecast.time)}</td>
-                    <td>${forecast.temp_c.toFixed(1)}</td>
-                    <td>${forecast.feelslike_c.toFixed(1)}</td>
-                    <td>${forecast.humidity}</td>
-                  </tr>
-                `;
-          weatherBody.innerHTML += row;
-        });
+        // hourlyForecast.forEach((forecast) => {
+        //   const row = `
+        //           <tr>
+        //             <td>${formatDateTime(forecast.time)}</td>
+        //             <td>${forecast.temp_c.toFixed(1)}</td>
+        //             <td>${forecast.feelslike_c.toFixed(1)}</td>
+        //             <td>${forecast.humidity}</td>
+        //           </tr>
+        //         `;
+        //   weatherBody.innerHTML += row;
+        // });
       }
 
       // Update the Firebase listener
