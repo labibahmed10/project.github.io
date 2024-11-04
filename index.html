@@ -229,16 +229,16 @@
       // Add these constants at the top of your script
       const WEATHER_API_KEY = "d1248c3b25244294963141611240211";
       const CITY = "Dhaka";
-      const UPDATE_INTERVAL = 300000; // 5 minutes in milliseconds
-      const CUTOFF_DATE = "2024-11-02 15:00:00";
+      const UPDATE_INTERVAL = 3000; // 5 minutes in milliseconds
+      const CUTOFF_DATE = "2024-10-02 12:00:00";
 
       const WEATHER_API_URL = `https://api.weatherapi.com/v1/forecast.json?key=${WEATHER_API_KEY}&q=${CITY}`;
       // Function to fetch weather API data
+
       async function fetchWeatherData() {
         try {
           const response = await fetch(WEATHER_API_URL);
           const data = await response.json();
-          // console.log(data);
           document.getElementById("weatherTemp").innerText = data.current.temp_c.toFixed(2);
           document.getElementById("feelsLike").innerText = data.current.feelslike_c.toFixed(2);
           document.getElementById("weatherHumidity").innerText = data.current.humidity;
@@ -247,14 +247,13 @@
           return data;
         } catch (error) {
           console.error("Error fetching weather data:", error);
-          return null;
+          // return null;
         }
       }
 
       // Initialize Firebase
-      https: firebase.initializeApp(firebaseConfig);
+      firebase.initializeApp(firebaseConfig);
       const database = firebase.database();
-
       // Chart initialization
       const ctx = document.getElementById("sensorChart").getContext("2d");
       const chart = new Chart(ctx, {
@@ -338,6 +337,7 @@
       // Modify the existing Firebase listener
       database.ref("sensor_data").on("value", (snapshot) => {
         const data = snapshot.val();
+        console.log(data);
         if (data) {
           const latestData = Object.values(data);
           // Update current values
@@ -399,11 +399,11 @@
         const hourlyForecast = weatherData.forecast.forecastday[0].hour;
         const newDateToShowHistory = new Date(CUTOFF_DATE).toLocaleDateString();
         let currentDate = new Date(weatherData.forecast.forecastday[0].date);
-        currentDate.setDate(currentDate.getDate() - 2);
+        currentDate.setDate(currentDate.getDate() - 3);
 
         // // Format it to a locale date string
         let previousDay = currentDate.toLocaleDateString();
-        // console.log(previousDay);
+        console.log(previousDay);
 
         async function fetchPrevDayHistoryData() {
           try {
@@ -414,6 +414,7 @@
             console.log(e);
           }
         }
+
         const historicalData = await fetchPrevDayHistoryData();
         console.log(historicalData?.forecast.forecastday[0].hour);
 
@@ -484,17 +485,19 @@
 
       // Update the Firebase listener
       function initializeFirebaseListener() {
-        const dbRef = database.ref("sensor_data").on("value", async (snapshot) => {
+        database.ref("sensor_data").on("value", async (snapshot) => {
+          console.log(snapshot);
           const sensorData = snapshot.val();
+          console.log(sensorData);
           if (sensorData) {
             const weatherData = await fetchWeatherData();
+            console.log(weatherData);
             if (weatherData) {
               updateComparisonTables(sensorData, weatherData);
             }
           }
         });
       }
-
       // Initialize everything when document is ready
       document.addEventListener("DOMContentLoaded", async () => {
         initializeFirebaseListener();
@@ -503,7 +506,7 @@
         setInterval(async () => {
           const weatherData = await fetchWeatherData();
           if (weatherData) {
-            const dbRef = database.ref("sensor_data").on("value", async (snapshot) => {
+            database.ref("sensor_data").on("value", async (snapshot) => {
               const sensorData = snapshot.val();
               if (sensorData) {
                 updateComparisonTables(sensorData, weatherData);
